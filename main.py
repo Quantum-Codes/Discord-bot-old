@@ -1,5 +1,6 @@
 from discord.ext import commands
 import discord, os, random, time
+from keep_alive import keep_alive
 
 token = os.environ["token"]
 
@@ -28,14 +29,18 @@ async def rand(ctx, num1=0, num2=10):
   else:
     await ctx.send("Syntax: !<num1> <num2> and num1 is bigger or equal to num 2")
 
+
 @bot.event
 async def on_message(message):
-  print(message.content)
-  """
-  if message.content == "rude":
+  if message.content.lower() == "rude":
     await message.channel.send("Dont be a fool")
   
-  if message == "online":
+  if message.content.lower() == "online":
     await message.channel.send("yep")
-  """
+  
+  
+    
+  await bot.process_commands(message)#it neccesarry for the on_message stuff not to override the commands
+
+keep_alive()
 bot.run(token)
