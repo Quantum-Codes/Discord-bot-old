@@ -4,6 +4,10 @@ from keep_alive import keep_alive
 import json, asyncio
 from replit import db
 
+def _reset():
+  db["lastbump"] = 10
+  db["reminded"] = False
+  exit()
 
 token = os.environ["token"]
 intents=discord.Intents.all()
@@ -66,10 +70,10 @@ async def on_ready():
     t = (db["lastbump"] + 2*60*60) - int(time.time()//1)
     if t <= 0:
       if db["reminded"] == False:
-        db["reminded"] == True
-        await channel.send("Time to bump! use `!d bump` command")
+        db["reminded"] = True
+        await channel.send("Time to bump! use `!d bump` command to bump.")
     
-    asyncio.sleep(1)
+    await asyncio.sleep(1)
 
 @bot.event
 async def on_member_join(member):
@@ -165,12 +169,16 @@ async def password(ctx):
 
 @bot.command()
 async def d(ctx, bump=None):
+  print("step 0")
   if bump == "bump":
+    print("step1")
     t = (db["lastbump"] + 2*60*60) - int(time.time()//1)
     if t <= 0:
+      print("step 2")
       db["lastbump"] = int(time.time()//1)
       db["reminded"] = False
-      await ctx.send(f"{ctx.message.author.mention} Thanks to bump!")
+      t = (db["lastbump"] + 2*60*60) - int(time.time()//1)
+      await ctx.send(f"{ctx.message.author.mention} Thanks to bump!\n{t} secs left to bump next time.")
     else:
       await ctx.send(f"Please wait {t} secs before bumping. :)")
       
@@ -178,7 +186,7 @@ async def d(ctx, bump=None):
 @bot.command()
 async def stats(ctx,username=None):
   if username == None:
-    ctx.send("Syntax: `!stats <user>` where <user> is mandatory")
+    await ctx.send("Syntax: `!stats <user>` where <user> is mandatory")
   else:
     code = user.getdata(username)
     if "..." in code:
@@ -234,7 +242,7 @@ async def on_message(message):
       else:
         await message.channel.send(val)
       
-      await bot.process_commands(message)#it neccesarry for the on_message stuff not to override the commands
+  await bot.process_commands(message)#it neccesarry for the on_message stuff not to override the commands
 
 
 keep_alive()
