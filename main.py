@@ -20,7 +20,9 @@ intents=discord.Intents.all()
 
 bot = commands.Bot(command_prefix="!",intents=intents)
 bot.remove_command('help')
-slash = SlashCommand(bot, sync_commands=True)
+slash = SlashCommand(bot, sync_commands=True) #sync automatically adds commands to discord
+guilds = [871696913987162112]
+
 
 class userdata:
   def __init__(self):
@@ -88,9 +90,9 @@ async def on_member_join(member):
   await member.add_roles(role)
   await member.send("Hey, this feature is in testing. Please go to #general in scratchers hub and confirm you got this DM. Thanks.")
 
-@slash.slash()
+@slash.slash(name="tester", guild_ids=guilds)
 async def tester(ctx):
-  ctx.send("I do work!")
+  await ctx.send("I do work!")
 
 
 
@@ -181,12 +183,9 @@ async def password(ctx):
 
 @bot.command()
 async def d(ctx, bump=None):
-  print("step 0")
   if bump == "bump":
-    print("step1")
     t = (db["lastbump"] + 2*60*60) - int(time.time()//1)
     if t <= 0:
-      print("step 2")
       db["lastbump"] = int(time.time()//1)
       db["reminded"] = False
       t = (db["lastbump"] + 2*60*60) - int(time.time()//1)
