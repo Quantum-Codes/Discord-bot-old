@@ -4,6 +4,12 @@ from keep_alive import keep_alive
 import json, asyncio
 from replit import db
 
+try:
+  from discord_slash import SlashCommand
+except ModuleNotFoundError:
+  os.system("pip install discord-py-slash-command")
+  from discord_slash import SlashCommand
+
 def _reset():
   db["lastbump"] = 10
   db["reminded"] = False
@@ -14,7 +20,7 @@ intents=discord.Intents.all()
 
 bot = commands.Bot(command_prefix="!",intents=intents)
 bot.remove_command('help')
-
+slash = SlashCommand(bot, sync_commands=True)
 
 class userdata:
   def __init__(self):
@@ -65,7 +71,7 @@ user = userdata()
 @bot.event
 async def on_ready():
   print("Bot is ready!")
-  channel = bot.get_channel(877487113233383444)
+  channel = bot.get_channel(877770366741803062)
   while True:
     t = (db["lastbump"] + 2*60*60) - int(time.time()//1)
     if t <= 0:
@@ -81,6 +87,12 @@ async def on_member_join(member):
   print(bool(role == 875675800886726666))
   await member.add_roles(role)
   await member.send("Hey, this feature is in testing. Please go to #general in scratchers hub and confirm you got this DM. Thanks.")
+
+@slash.slash()
+async def tester(ctx):
+  ctx.send("I do work!")
+
+
 
 @bot.command()
 async def help(ctx, command=None):
