@@ -1,14 +1,11 @@
+#https://stackoverflow.com/questions/66724687/how-to-solve-a-429-too-many-requests-when-running-discord-py-bot-on-repl-it 
+#read if get 429 error
 from discord.ext import commands
 import discord, os, random, time, requests
 from keep_alive import keep_alive
 import json, asyncio
 from replit import db
 
-try:
-  from discord_slash import SlashCommand
-except ModuleNotFoundError:
-  os.system("pip install discord-py-slash-command")
-  from discord_slash import SlashCommand
 
 def _reset():
   db["lastbump"] = 10
@@ -20,7 +17,6 @@ intents=discord.Intents.all()
 
 bot = commands.Bot(command_prefix="!",intents=intents)
 bot.remove_command('help')
-slash = SlashCommand(bot, sync_commands=True) #sync automatically adds commands to discord
 guilds = [871696913987162112]
 
 
@@ -90,7 +86,7 @@ async def on_member_join(member):
   await member.add_roles(role)
   await member.send("Hey, this feature is in testing. Please go to #general in scratchers hub and confirm you got this DM. Thanks.")
 
-@slash.slash(name="tester", guild_ids=guilds)
+@bot.command() #name
 async def tester(ctx):
   await ctx.send("I do work!")
 
